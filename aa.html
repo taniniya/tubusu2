@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タニシクリッカー</title>
+    <style>
+        :root {
+            --bg: #f0f0f0;
+            --text: #2c3e50;
+        }
+
+        body {
+            text-align: center;
+            font-family: sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        #count {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--text);
+            margin: 10px 0;
+        }
+
+        .tanisi-box {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        #tanisi {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.05s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #tanisi:active {
+            transform: scale(0.9);
+        }
+
+        .pop {
+            position: absolute;
+            pointer-events: none;
+            color: #e74c3c;
+            font-weight: bold;
+            animation: fly 0.4s ease-out forwards;
+        }
+
+        @keyframes fly {
+            0% { transform: translate(-50%, -50%); opacity: 1; }
+            100% { transform: translate(-50%, -150%); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="count">0</div>
+        <div class="tanisi-box">
+            <img id="tanisi" src="tanisi.png" alt="タニシ">
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            const el = {
+                tanisi: document.getElementById("tanisi"),
+                display: document.getElementById("count")
+            };
+
+            const state = {
+                count: 0,
+                timer: null
+            };
+
+            const playSound = () => {
+                const audio = new Audio("click.mp3");
+                audio.play();
+            };
+
+            const spawnEffect = (x, y) => {
+                const p = document.createElement("div");
+                p.className = "pop";
+                p.textContent = "+1";
+                p.style.left = `${x}px`;
+                p.style.top = `${y}px`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 400);
+            };
+
+            const handleClick = (e) => {
+                state.count++;
+                el.display.textContent = state.count.toLocaleString();
+                
+                playSound();
+                spawnEffect(e.clientX, e.clientY);
+
+                el.tanisi.src = "ti.png";
+                clearTimeout(state.timer);
+                state.timer = setTimeout(() => {
+                    el.tanisi.src = "tanisi.png";
+                }, 150);
+            };
+
+            el.tanisi.addEventListener("mousedown", handleClick);
+            el.tanisi.ondragstart = () => false;
+        })();
+    </script>
+
+</body>
+</html>
